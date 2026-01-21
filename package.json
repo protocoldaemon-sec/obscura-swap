@@ -3,12 +3,6 @@
 	"version": "1.0.0",
 	"description": "Privacy-focused cross-chain swap platform powered by SilentSwap",
 	"private": true,
-	"workspaces": [
-		"backend",
-		"frontend",
-		"mcp/server",
-		"mcp/client"
-	],
 	"scripts": {
 		"backend:install": "cd backend && pnpm install",
 		"backend:dev": "cd backend && pnpm dev",
@@ -29,9 +23,5 @@
 		"defi"
 	],
 	"author": "",
-	"license": "MIT",
-	"devDependencies": {
-		"@types/react": "^18.2.0",
-		"typescript": "^5.3.0"
-	}
+	"license": "MIT"
 }
