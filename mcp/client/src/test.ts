@@ -33,15 +33,16 @@ async function runTests() {
     const assets = await client.getSupportedAssets();
     console.log(`✅ Found ${assets.chains.length} chains:`);
     assets.chains.forEach((chain: any) => {
-      console.log(`   - ${chain.chainName} (${chain.chainId}): ${chain.tokens.length} tokens`);
+      const tokenCount = assets.tokens[chain.caipChainId]?.length || 0;
+      console.log(`   - ${chain.name} (${chain.id}): ${tokenCount} tokens`);
     });
     console.log('');
 
     // Test 4: Get Chain Info
     console.log('🧪 Test 4: Get Chain Info (Ethereum)');
     const ethInfo = await client.getChainInfo(1);
-    console.log(`✅ Chain: ${ethInfo.chainName}`);
-    console.log(`   Native Token: ${ethInfo.nativeToken.symbol}`);
+    console.log(`✅ Chain: ${ethInfo.name}`);
+    console.log(`   Symbol: ${ethInfo.symbol}`);
     console.log(`   Tokens: ${ethInfo.tokens.length}`);
     console.log('');
 

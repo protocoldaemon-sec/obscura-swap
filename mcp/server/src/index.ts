@@ -17,23 +17,30 @@ const API_BASE_URL = process.env.OBSCURA_API_URL || 'http://localhost:3000';
 
 interface HealthResponse {
   status: string;
+  service: string;
   timestamp: string;
   environment: string;
 }
 
-interface Asset {
-  chainId: number;
-  chainName: string;
-  nativeToken: {
-    symbol: string;
-    address: string;
-    decimals: number;
-  };
-  tokens: Array<{
-    symbol: string;
-    address: string;
-    decimals: number;
-  }>;
+interface Chain {
+  id: number | string;
+  name: string;
+  symbol: string;
+  caipChainId: string;
+  rpcUrl: string;
+}
+
+interface Token {
+  caip19: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  address: string;
+}
+
+interface AssetsResponse {
+  chains: Chain[];
+  tokens: Record<string, Token[]>;
 }
 
 interface QuoteResponse {
@@ -154,7 +161,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       }
 
       case 'get_supported_assets': {
-        const response = await axios.get<{ chains: Asset[] }>(`${API_BASE_URL}/api/swap/assets`);
+        const response = await axios.get<AssetsResponse>(`${API_BASE_URL}/api/swap/assets`);
         return {
           content: [
             {
@@ -198,18 +205,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
 
       case 'get_chain_info': {
         const { chainId } = args as { chainId: number };
-        const response = await axios.get<{ chains: Asset[] }>(`${API_BASE_URL}/api/swap/assets`);
-        const chain = response.data.chains.find((c: Asset) => c.chainId === chainId);
+        const response = await axios.get<AssetsResponse>(`${API_BASE_URL}/api/swap/assets`);
+        const chain = response.data.chains.find((c: Chain) => c.id === chainId);
 
         if (!chain) {
           throw new Error(`Chain ${chainId} not found`);
         }
 
+        // Get tokens for this chain
+        const tokens = response.data.tokens[chain.caipChainId] || [];
+
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(chain, null, 2),
+              text: JSON.stringify({ ...chain, tokens }, null, 2),
             },
           ],
         };

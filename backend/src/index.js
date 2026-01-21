@@ -13,7 +13,12 @@ app.use(express.json());
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'obscura-swap' });
+  res.json({ 
+    status: 'ok', 
+    service: 'obscura-swap',
+    timestamp: new Date().toISOString(),
+    environment: config.nodeEnv
+  });
 });
 
 // Routes
@@ -25,7 +30,7 @@ app.use(errorHandler);
 
 // Start server
 app.listen(config.port, () => {
-  console.log(`🚀 Obscura Swap backend running on port ${config.port}`);
-  console.log(`📡 Environment: ${config.nodeEnv}`);
-  console.log(`🔒 Privacy-powered by SilentSwap`);
+  console.log(`Obscura Swap backend running on port ${config.port}`);
+  console.log(`Environment: ${config.nodeEnv}`);
+  console.log(`Privacy-powered by SilentSwap`);
 });
