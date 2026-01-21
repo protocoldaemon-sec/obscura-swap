@@ -7,7 +7,7 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { config } from 'dotenv';
 
 // Load environment variables
@@ -136,7 +136,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // Handle tool execution requests
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
   const { name, arguments: args } = request.params;
 
   try {
@@ -199,7 +199,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_chain_info': {
         const { chainId } = args as { chainId: number };
         const response = await axios.get<{ chains: Asset[] }>(`${API_BASE_URL}/api/swap/assets`);
-        const chain = response.data.chains.find((c) => c.chainId === chainId);
+        const chain = response.data.chains.find((c: Asset) => c.chainId === chainId);
 
         if (!chain) {
           throw new Error(`Chain ${chainId} not found`);
@@ -218,9 +218,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error) {
+  } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      const errorMessage = error.response?.data?.error || error.message;
+      const axiosError = error as AxiosError<any>;
+      const errorMessage = axiosError.response?.data?.error || axiosError.message;
       return {
         content: [
           {
@@ -228,8 +229,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             text: JSON.stringify(
               {
                 error: errorMessage,
-                status: error.response?.status,
-                details: error.response?.data,
+                status: axiosError.response?.status,
+                details: axiosError.response?.data,
               },
               null,
               2

@@ -43,25 +43,27 @@ export class ObscuraSwapMCPClient {
     console.log('Connected to Obscura Swap MCP Server');
   }
 
-  async listTools() {
+  async listTools(): Promise<any[]> {
     const response = await this.client.listTools();
     return response.tools;
   }
 
-  async getHealth() {
+  async getHealth(): Promise<any> {
     const response = await this.client.callTool({
       name: 'get_health',
       arguments: {},
     });
-    return JSON.parse(response.content[0].text);
+    const content: any = response.content;
+    return JSON.parse(content[0].text);
   }
 
-  async getSupportedAssets() {
+  async getSupportedAssets(): Promise<any> {
     const response = await this.client.callTool({
       name: 'get_supported_assets',
       arguments: {},
     });
-    return JSON.parse(response.content[0].text);
+    const content: any = response.content;
+    return JSON.parse(content[0].text);
   }
 
   async getSwapQuote(params: {
@@ -71,20 +73,22 @@ export class ObscuraSwapMCPClient {
     toToken: string;
     amount: string;
     userAddress: string;
-  }) {
+  }): Promise<any> {
     const response = await this.client.callTool({
       name: 'get_swap_quote',
       arguments: params,
     });
-    return JSON.parse(response.content[0].text);
+    const content: any = response.content;
+    return JSON.parse(content[0].text);
   }
 
-  async getChainInfo(chainId: number) {
+  async getChainInfo(chainId: number): Promise<any> {
     const response = await this.client.callTool({
       name: 'get_chain_info',
       arguments: { chainId },
     });
-    return JSON.parse(response.content[0].text);
+    const content: any = response.content;
+    return JSON.parse(content[0].text);
   }
 
   async disconnect() {
